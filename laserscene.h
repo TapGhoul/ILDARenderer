@@ -10,6 +10,7 @@ class LaserScene : public QGraphicsScene
 public:
     explicit LaserScene(QObject *parent = 0);
     int offset = 1;
+    float scale = 1.0f;
 
 signals:
 
