@@ -18,11 +18,11 @@ void LaserFunctions::cycleColours(LaserScene *scene, int time)
     scene->setPos(100, 100);
     scene->setPos(100, 0);
     scene->setPos(0, 0);
-    scene->setColour(QColor(time, 256-time, 0));
+    scene->setColour(QColor(time, 255-time, 0));
     scene->setPos(100, 100);
     scene->setBlanking(true);
     scene->setPos(0, 100);
-    scene->setColour(QColor(256-time, time, 0));
+    scene->setColour(QColor(255-time, time, 0));
     scene->setBlanking(false);
     scene->setPos(100, 0);
     scene->setBlanking(true);
@@ -88,5 +88,108 @@ void LaserFunctions::spinSquareEdges(LaserScene *scene, int time)
     scene->setPos(sX, sY);
     scene->setColour(Qt::blue);
     scene->setPos(100-sX, 100-sY);
+    scene->setBlanking(true);
+}
+
+void LaserFunctions::spinCubeZ(LaserScene *scene, int time)
+{
+    double angle = (time*M_PI)/128.0f-M_PI;
+    int sX = sin(angle)*50;
+    int sY = cos(angle)*50;
+    int height = 75;
+
+    scene->setBlanking(true);
+    scene->setColour(Qt::white);
+    scene->setPos(sX, 0);
+    scene->setBlanking(false);
+    scene->setPos(sY, 10);
+    scene->setPos(sY, height+10);
+    scene->setPos(-sX, height+10);
+    scene->setPos(-sX, 10);
+    scene->setPos(-sY, 0);
+    scene->setPos(-sY, height);
+    scene->setPos(sX, height);
+    scene->setPos(sX, 0);
+    scene->setPos(-sY, 0);
+    scene->setBlanking(true);
+    scene->setPos(-sY, height);
+    scene->setBlanking(false);
+    scene->setPos(-sX, height+10);
+    scene->setBlanking(true);
+    scene->setPos(-sX, 10);
+    scene->setBlanking(false);
+    scene->setPos(sY, 10);
+    scene->setBlanking(true);
+    scene->setPos(sY, height+10);
+    scene->setBlanking(false);
+    scene->setPos(sX, height);
+    scene->setBlanking(true);
+}
+
+void LaserFunctions::spinCubeY(LaserScene *scene, int time)
+{
+    double angle = (time*M_PI)/128.0f-M_PI;
+    int sX = sin(angle)*50;
+    int sY = cos(angle)*50;
+    int width = 75;
+    scene->setBlanking(true);
+    scene->setColour(Qt::white);
+    scene->setPos(0, sX);
+    scene->setBlanking(false);
+    scene->setPos(10, sY);
+    scene->setPos(width+10, sY);
+    scene->setPos(width+10, -sX);
+    scene->setPos(10, -sX);
+    scene->setPos(0, -sY);
+    scene->setPos(width, -sY);
+    scene->setPos(width, sX);
+    scene->setPos(0, sX);
+    scene->setPos(0, -sY);
+    scene->setBlanking(true);
+    scene->setPos(width, -sY);
+    scene->setBlanking(false);
+    scene->setPos(width+10, -sX);
+    scene->setBlanking(true);
+    scene->setPos(10, -sX);
+    scene->setBlanking(false);
+    scene->setPos(10, sY);
+    scene->setBlanking(true);
+    scene->setPos(width+10, sY);
+    scene->setBlanking(false);
+    scene->setPos(width, sX);
+    scene->setBlanking(true);
+}
+
+void LaserFunctions::spinCubeYZ(LaserScene *scene, int time)
+{
+    double angle = (time*M_PI)/128.0f-M_PI;
+    int sX = sin(angle)*50;
+    int sY = cos(angle)*50;
+    int scale = 25;
+    scene->setBlanking(true);
+    scene->setColour(Qt::white);
+    scene->setPos(sX, sY);
+    scene->setBlanking(false);
+    scene->setPos(sY, -sX);
+    scene->setPos(scale+sY, scale-sX);
+    scene->setPos(scale-sX, scale-sY);
+    scene->setPos(-sX, -sY);
+    scene->setPos(-sY, sX);
+    scene->setPos(scale-sY, scale+sX);
+    scene->setPos(scale+sX, scale+sY);
+    scene->setPos(sX, sY);
+    scene->setPos(-sY, sX);
+    scene->setBlanking(true);
+    scene->setPos(scale-sY, scale+sX);
+    scene->setBlanking(false);
+    scene->setPos(scale-sX, scale-sY);
+    scene->setBlanking(true);
+    scene->setPos(-sX, -sY);
+    scene->setBlanking(false);
+    scene->setPos(sY, -sX);
+    scene->setBlanking(true);
+    scene->setPos(scale+sY, scale-sX);
+    scene->setBlanking(false);
+    scene->setPos(scale+sX, scale+sY);
     scene->setBlanking(true);
 }

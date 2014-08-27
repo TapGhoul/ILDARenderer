@@ -14,8 +14,8 @@ void LaserScene::setColour(QColor newColour) {
 }
 
 void LaserScene::setPos(int newX, int newY) {
-    newX += offset;
-    newY += offset;
+    newX += offsetX;
+    newY += offsetY;
     newX *= scale;
     newY *= scale;
     if (!blanking)
