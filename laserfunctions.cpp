@@ -1,3 +1,4 @@
+#define SPINYZCENTER true
 #include <QtCore>
 #include <QColor>
 #include "laserfunctions.h"
@@ -166,6 +167,9 @@ void LaserFunctions::spinCubeYZ(LaserScene *scene, int time)
     int sX = sin(angle)*50;
     int sY = cos(angle)*50;
     int scale = 25;
+
+    bool doBlank = true;
+
     scene->setBlanking(true);
     scene->setColour(Qt::white);
     scene->setPos(sX, sY);
@@ -179,23 +183,49 @@ void LaserFunctions::spinCubeYZ(LaserScene *scene, int time)
     scene->setPos(scale+sX, scale+sY);
     scene->setPos(sX, sY);
     scene->setPos(-sY, sX);
+#if SPINYZCENTER
     scene->setColour(Qt::red);
     scene->setPos(scale/2, scale/2);
+#else
+    scene->setBlanking(true);
+#endif
     scene->setPos(scale-sY, scale+sX);
+#if SPINYZCENTER
     scene->setColour(Qt::white);
+#else
+    scene->setBlanking(false);
+#endif
     scene->setPos(scale-sX, scale-sY);
+#if SPINYZCENTER
     scene->setColour(Qt::green);
     scene->setPos(scale/2, scale/2);
+#else
+    scene->setBlanking(true);
+#endif
     scene->setPos(-sX, -sY);
+#if SPINYZCENTER
     scene->setColour(Qt::white);
+#else
+    scene->setBlanking(false);
+#endif
     scene->setPos(sY, -sX);
+#if SPINYZCENTER
     scene->setColour(Qt::blue);
     scene->setPos(scale/2, scale/2);
+#else
+    scene->setBlanking(true);
+#endif
     scene->setPos(scale+sY, scale-sX);
+#if SPINYZCENTER
     scene->setColour(Qt::white);
+#else
+    scene->setBlanking(false);
+#endif
     scene->setPos(scale+sX, scale+sY);
+#if SPINYZCENTER
     scene->setColour(QColor(255, 0, 255));
     scene->setPos(scale/2, scale/2);
     scene->setPos(sX, sY);
+#endif
     scene->setBlanking(true);
 }
