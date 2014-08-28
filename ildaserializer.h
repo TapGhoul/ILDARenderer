@@ -8,11 +8,14 @@ class ILDASerializer : public QObject
     Q_OBJECT
 public:
     explicit ILDASerializer(QObject *parent = 0);
-    static uchar* coordinateHeader();
+    static uchar * coordinates();
 
 signals:
 
 public slots:
+
+private:
+    //static uchar * coordinateHeader();
 
 };
 

@@ -168,8 +168,6 @@ void LaserFunctions::spinCubeYZ(LaserScene *scene, int time)
     int sY = cos(angle)*50;
     int scale = 25;
 
-    bool doBlank = true;
-
     scene->setBlanking(true);
     scene->setColour(Qt::white);
     scene->setPos(sX, sY);

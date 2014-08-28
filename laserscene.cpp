@@ -1,3 +1,4 @@
+#define VISIBLEBLANKING false
 #include "laserscene.h"
 
 LaserScene::LaserScene(QObject *parent) :
@@ -18,7 +19,9 @@ void LaserScene::setPos(int newX, int newY) {
     newY += offsetY;
     newX *= scale;
     newY *= scale;
+#if !VISIBLEBLANKING
     if (!blanking)
+#endif
         addLine(xPos, yPos, newX, newY, *laser);
 
     xPos = newX;
@@ -26,7 +29,11 @@ void LaserScene::setPos(int newX, int newY) {
 }
 
 void LaserScene::setBlanking(bool blank) {
+#if VISIBLEBLANKING
+    laser->setWidthF(blank ? 0.5 : 1.25);
+#else
     blanking = blank;
+#endif
 }
 
 void LaserScene::clearScene() {
