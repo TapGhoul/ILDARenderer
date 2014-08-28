@@ -1,7 +1,9 @@
 #include "ildaserializer.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+#include <iostream>
+#include <fstream>
 #define ILDAHEADER 'I', 'L', 'D', 'A', 0x0, 0x0, 0x0
 #define COMPANYNAME { 'A', 'N', 'D', 'R', 'E', 'W', '.', 'S' }
 #define reverse16(i) { (i & 0xff00) >> 8, i & 0xff }
@@ -45,9 +47,15 @@ uchar * coordinateHeader(uint16_t totalPoints, uint16_t totalFrames, uint16_t fr
 
 uchar * ILDASerializer::coordinates() {
     uint16_t totalFrames = 100;
+    ofstream outfile("test.ild", ofstream::binary);
+    if (!outfile) {
+        // Error opening file!
+        return NULL;
+    }
     for (int frame = 0; frame < totalFrames; frame++) {
         uint16_t totalPoints = 100;
         uchar * header = coordinateHeader(totalPoints, totalFrames, frame);
+        outfile.write((const char*)&header[0], 32);
         uchar points[totalPoints*6] = {};
         for (int point = 0; point < totalPoints; point++) {
             point_data pointData;
@@ -62,8 +70,10 @@ uchar * ILDASerializer::coordinates() {
             memcpy(points+point*6+2, pointY, 2);
             memcpy(points+point*6+4, pointStatus, 2);
         }
-
+        outfile.write((const char*)&points[0], totalPoints*6);
     }
     uchar * footer = coordinateHeader(0, 0, 0);
+    outfile.write((const char*)&footer[0], 32); // May actually be 26, gotta confirm the file specs
+    outfile.close();
     return NULL;
 }
