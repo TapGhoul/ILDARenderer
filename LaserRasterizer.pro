@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     laserscene.cpp \
-    laserfunctions.cpp
+    laserfunctions.cpp \
+    ildaserializer.cpp
 
 HEADERS  += mainwindow.h \
     laserscene.h \
-    laserfunctions.h
+    laserfunctions.h \
+    ildaserializer.h
 
 FORMS    += mainwindow.ui
 
