@@ -24,8 +24,8 @@ struct point_data {
 uchar * coordinateHeader(uint16_t totalPoints, uint16_t totalFrames, uint16_t frameNo) {
     uchar *output = new uchar[32];
     uchar header[8] = {ILDAHEADER, 0x1};
-    uchar framename[8] = {'F', 'R', 'M', '0', '0', '0', '0', '0'};
-    uchar companyname[8] = COMPANYNAME;
+    uchar frameName[8] = {'F', 'R', 'M', '0', '0', '0', '0', '0'};
+    uchar companyName[8] = COMPANYNAME;
 
 
     uchar totalPointsc[2] = reverse16(totalPoints);
@@ -33,10 +33,10 @@ uchar * coordinateHeader(uint16_t totalPoints, uint16_t totalFrames, uint16_t fr
     uchar frameNoc[2] = reverse16(frameNo);
     uchar totalFramesc[2] = reverse16(totalFrames);
 
-    memcpy(framename+3+(5-frameNos.length()), &frameNos[0], frameNos.length());
+    memcpy(frameName+3+(5-frameNos.length()), &frameNos[0], frameNos.length());
     memcpy(output, header, 8);
-    memcpy(output+8, framename, 8);
-    memcpy(output+16, companyname, 8);
+    memcpy(output+8, frameName, 8);
+    memcpy(output+16, companyName, 8);
     memcpy(output+24, totalPointsc, 2);
     memcpy(output+26, frameNoc, 2);
     memcpy(output+28, totalFramesc, 2);
@@ -76,4 +76,28 @@ uchar * ILDASerializer::coordinates() {
     outfile.write((const char*)&footer[0], 32); // May actually be 26, gotta confirm the file specs
     outfile.close();
     return NULL;
+}
+
+uchar * colourHeader(uint16_t totalColours, uint16_t paletteNumber) {
+    uchar *output = new uchar[32];
+    uchar header[8] = {ILDAHEADER, 0x2};
+    uchar paletteName[8] = { 'P', 'L', 'T', '0', '0', '0', '0', '0' };
+    uchar companyName[8] = COMPANYNAME;
+
+    uchar totalColoursc[2] = reverse16(totalColours);
+    string paletteNumbers = to_string(paletteNumber);
+    uchar paletteNumberc[2] = reverse16(paletteNumber);
+
+    memcpy(paletteName+3+(5-paletteNumbers.length()), &paletteNumbers[0], paletteNumbers.length());
+    memcpy(output, header, 8);
+    memcpy(output+8, paletteName, 8);
+    memcpy(output+16, companyName, 8);
+    memcpy(output+24, totalColoursc, 2);
+    memcpy(output+26, paletteNumberc, 2);
+    output[28] = 0;
+    output[29] = 0;
+    output[30] = 0; // Scanner head (0-255)
+    output[31] = 0;
+
+    return output;
 }
