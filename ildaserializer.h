@@ -9,6 +9,7 @@ class ILDASerializer : public QObject
 public:
     explicit ILDASerializer(QObject *parent = 0);
     static uchar * coordinates();
+    static uchar * colourTable();
 
 signals:
 

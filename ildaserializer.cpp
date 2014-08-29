@@ -15,12 +15,6 @@ ILDASerializer::ILDASerializer(QObject *parent) :
 {
 }
 
-struct point_data {
-    __int16_t x;
-    __int16_t y;
-    __int16_t status;
-};
-
 uchar * coordinateHeader(uint16_t totalPoints, uint16_t totalFrames, uint16_t frameNo) {
     uchar *output = new uchar[32];
     uchar header[8] = {ILDAHEADER, 0x1};
@@ -58,14 +52,13 @@ uchar * ILDASerializer::coordinates() {
         outfile.write((const char*)&header[0], 32);
         uchar points[totalPoints*6] = {};
         for (int point = 0; point < totalPoints; point++) {
-            point_data pointData;
-            pointData.x = 'X' << 8 | 'x';
-            pointData.y = 'Y' << 8 | 'y';
-            pointData.status = 'S' << 8 | 's';
+            __int16_t x = 'X' << 8 | 'x';
+            __int16_t y = 'Y' << 8 | 'y';
+            __int16_t status = 'S' << 8 | 's';
 
-            uchar pointX[2] = reverse16(pointData.x);
-            uchar pointY[2] = reverse16(pointData.y);
-            uchar pointStatus[2] = { (pointData.status & 0xff00) >> 8, pointData.status };
+            uchar pointX[2] = reverse16(x);
+            uchar pointY[2] = reverse16(y);
+            uchar pointStatus[2] = reverse16(status);
             memcpy(points+point*6, pointX, 2);
             memcpy(points+point*6+2, pointY, 2);
             memcpy(points+point*6+4, pointStatus, 2);
@@ -100,4 +93,23 @@ uchar * colourHeader(uint16_t totalColours, uint16_t paletteNumber) {
     output[31] = 0;
 
     return output;
+}
+
+uchar * ILDASerializer::colourTable() {
+    uint16_t totalPalettes = 1;
+    for (int palette = 0; palette < totalPalettes; palette++) {
+        uint16_t totalColours = 10;
+        uchar * header = colourHeader(totalColours, palette);
+        uchar colours[totalColours*3]= {};
+        for (int colour = 0; colour < totalColours; colour++) {
+            __uint8_t r = 'R';
+            __uint8_t g = 'G';
+            __uint8_t b = 'B';
+
+            memcpy(colours+colour*3, &r, 1);
+            memcpy(colours+colour*3+1, &g, 1);
+            memcpy(colours+colour*3+2, &b, 1);
+        }
+    }
+    return NULL;
 }

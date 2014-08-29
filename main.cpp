@@ -7,6 +7,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     ILDASerializer::coordinates();
+    ILDASerializer::colourTable();
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
