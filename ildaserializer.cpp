@@ -40,24 +40,27 @@ vector<unsigned char> * ILDASerializer::coordinates() {
     for (int frame = 0; frame < totalFrames; frame++) {
         u_int16_t totalPoints = 100;
         unsigned char * header = coordinateHeader(totalPoints, totalFrames, frame);
-        unsigned char points[totalPoints*6] = {};
+        unsigned char points[totalPoints * 8] = {};
         for (int point = 0; point < totalPoints; point++) {
             __int16_t x = 'X' << 8 | 'x';
             __int16_t y = 'Y' << 8 | 'y';
+            __int16_t z = 0x0;
             __int16_t status = 'S' << 8 | 's';
 
             unsigned char pointX[2] = reverse16(x);
             unsigned char pointY[2] = reverse16(y);
+            unsigned char pointZ[2] = reverse16(z);
             unsigned char pointStatus[2] = reverse16(status);
-            copy(pointX, &pointX[1], &points[point * 6]);
-            copy(pointY, &pointY[1], &points[point * 6 + 2]);
-            copy(pointStatus, &pointStatus[1], &points[point * 6 + 4]);
+            copy(pointX, &pointX[1], &points[point * 8]);
+            copy(pointY, &pointY[1], &points[point * 8 + 2]);
+            copy(pointZ, &pointZ[1], &points[point * 8 + 4]);
+            copy(pointStatus, &pointStatus[1], &points[point * 8 + 6]);
         }
-        output.resize(output.size() + 32 + (totalPoints * 6));
+        output.resize(output.size() + 32 + (totalPoints * 8));
         copy(header, header + 32, &output[outputPos]);
         outputPos += 32;
-        copy(points, points + (totalPoints * 6), &output[outputPos]);
-        outputPos += totalPoints * 6;
+        copy(points, points + (totalPoints * 8), &output[outputPos]);
+        outputPos += totalPoints * 8;
     }
     unsigned char * footer = coordinateHeader(0, 0, 0);
     output.resize(output.size() + 32);
