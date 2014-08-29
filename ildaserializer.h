@@ -8,8 +8,8 @@ class ILDASerializer : public QObject
     Q_OBJECT
 public:
     explicit ILDASerializer(QObject *parent = 0);
-    static uchar * coordinates();
-    static uchar * colourTable();
+    static std::vector<uchar> * coordinates();
+    static std::vector<uchar> * colourTable();
 
 signals:
 
