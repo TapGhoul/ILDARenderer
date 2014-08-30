@@ -25,11 +25,14 @@ private slots:
 
     void on_action_Export_triggered();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     LaserScene *scene;
     QTimer *redrawTimer;
     QTime *rotateTime;
+    void ExportILDA();
 
 };
 

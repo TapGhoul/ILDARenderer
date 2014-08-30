@@ -5,6 +5,8 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+//#include <QFileDialog>
+#include <QMessageBox>
 
 using namespace std;
 
@@ -66,12 +68,26 @@ void MainWindow::redraw() {
 
 void MainWindow::on_action_Export_triggered()
 {
+    ExportILDA();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    ExportILDA();
+}
+
+void MainWindow::ExportILDA() {
     vector<vector<coordinate_data>> allData(256);
     for (int i = 0; i < 255; i++) {
         allData[i] = LaserFunctionsILDA::spinCubeYZ(i);
     }
     vector<char> chrsVec = ILDASerializer::coordinates(allData);
     vector<char> colsVec = ILDASerializer::colourTable();
+    //QString filename = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath(), "ILDA v5.1 (*.ild)");
+    //string fn = "012356789";
+    //fn.substr(fn.length() - 3);
+    //filename = filename.isNull() ? "Null!" : filename.endsWith(".ild", Qt::CaseInsensitive) ? filename : filename + ".ild";
+    //QMessageBox::information(this, "Title", filename, QMessageBox::Ok | QMessageBox::Close);
     ofstream out("out.ild", std::ofstream::binary);
     for (int i=0; i < colsVec.size(); i++) {
         out.write((const char*)&colsVec.data()[i], 1);
@@ -80,4 +96,5 @@ void MainWindow::on_action_Export_triggered()
         out.write((const char*)&chrsVec.data()[i], 1);
     }
     out.close();
+    QMessageBox::information(this, "Success", "Successfully exported ILDA file!", QMessageBox::Ok);
 }

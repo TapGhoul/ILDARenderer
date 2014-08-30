@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QGraphicsView" name="graphicsView">
       <property name="interactive">
@@ -22,6 +22,13 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Export</string>
       </property>
      </widget>
     </item>
@@ -41,8 +48,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionQuit"/>
     <addaction name="action_Export"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -60,6 +67,9 @@
   <action name="action_Export">
    <property name="text">
     <string>&amp;Export</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>
