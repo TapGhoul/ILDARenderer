@@ -1,4 +1,5 @@
 #include "ildaserializer.h"
+#include <string.h>
 #define ILDAHEADER 'I', 'L', 'D', 'A', 0x0, 0x0, 0x0
 #define COMPANYNAME { 'A', 'N', 'D', 'R', 'E', 'W', '.', 'S' }
 #define reverse16(i) { (i & 0xff00) >> 8, i & 0xff }
@@ -9,17 +10,26 @@ ILDASerializer::ILDASerializer()
 {
 }
 
-unsigned char * coordinateHeader(u_int16_t totalPoints, u_int16_t totalFrames, u_int16_t frameNo) {
-    unsigned char output[32];
-    unsigned char header[8] = {ILDAHEADER, 0x1};
-    unsigned char frameName[8] = {'F', 'R', 'M', '0', '0', '0', '0', '0'};
-    unsigned char companyName[8] = COMPANYNAME;
+colour_data colourData(__uint8_t r, __uint8_t g, __uint8_t b)
+{
+    colour_data output;
+    output.r = r;
+    output.g = g;
+    output.b = b;
+    return output;
+}
+
+char * coordinateHeader(u_int16_t totalPoints, u_int16_t totalFrames, u_int16_t frameNo) {
+    char * output = new char[32];
+    char header[8] = {ILDAHEADER, 0x1};
+    char frameName[8] = {'F', 'R', 'M', '0', '0', '0', '0', '0'};
+    char companyName[8] = COMPANYNAME;
 
 
-    unsigned char totalPointsc[2] = reverse16(totalPoints);
+    char totalPointsc[2] = reverse16(totalPoints);
     string frameNos = to_string(frameNo);
-    unsigned char frameNoc[2] = reverse16(frameNo);
-    unsigned char totalFramesc[2] = reverse16(totalFrames);
+    char frameNoc[2] = reverse16(frameNo);
+    char totalFramesc[2] = reverse16(totalFrames);
 
     copy(&frameNos[0], &frameNos[frameNos.length()], &frameName[3 + (5 - frameNos.length())]);
     copy(header, &header[8], &output[0]);
@@ -33,50 +43,48 @@ unsigned char * coordinateHeader(u_int16_t totalPoints, u_int16_t totalFrames, u
     return output;
 }
 
-vector<unsigned char> * ILDASerializer::coordinates() {
-    vector<unsigned char> output;
-    uint outputPos = 0;
-    u_int16_t totalFrames = 100;
+vector<char> ILDASerializer::coordinates(vector<vector<coordinate_data>> coords) {
+    vector<char> output;
+    unsigned int outputPos = 0;
+    unsigned int totalFrames = coords.size();
     for (int frame = 0; frame < totalFrames; frame++) {
-        u_int16_t totalPoints = 100;
-        unsigned char * header = coordinateHeader(totalPoints, totalFrames, frame);
-        unsigned char points[totalPoints * 8] = {};
-        for (int point = 0; point < totalPoints; point++) {
-            __int16_t x = 'X' << 8 | 'x';
-            __int16_t y = 'Y' << 8 | 'y';
-            __int16_t z = 0x0;
-            __int16_t status = 'S' << 8 | 's';
+        unsigned int totalPoints = coords[frame].size();
 
-            unsigned char pointX[2] = reverse16(x);
-            unsigned char pointY[2] = reverse16(y);
-            unsigned char pointZ[2] = reverse16(z);
-            unsigned char pointStatus[2] = reverse16(status);
-            copy(pointX, &pointX[1], &points[point * 8]);
-            copy(pointY, &pointY[1], &points[point * 8 + 2]);
-            copy(pointZ, &pointZ[1], &points[point * 8 + 4]);
-            copy(pointStatus, &pointStatus[1], &points[point * 8 + 6]);
-        }
-        output.resize(output.size() + 32 + (totalPoints * 8));
-        copy(header, header + 32, &output[outputPos]);
+        char * header = coordinateHeader(totalPoints, totalFrames, frame);
+        output.resize(output.size() + 32 + (totalPoints * 6));
+        copy(&header[0], &header[32], &output[outputPos]);
+        delete[] header;
         outputPos += 32;
-        copy(points, points + (totalPoints * 8), &output[outputPos]);
-        outputPos += totalPoints * 8;
+        for (int pointIndex = 0; pointIndex < totalPoints; pointIndex++) {
+            coordinate_data * point = &coords[frame][pointIndex];
+
+            char pointX[2] = reverse16(point->x);
+            char pointY[2] = reverse16(point->y);
+            char status[2] = { point->blanking << 6 | (pointIndex == totalPoints - 1) << 7, point->colour };
+
+            copy(&pointX[0], &pointX[2], &output[outputPos]);
+            copy(&pointY[0], &pointY[2], &output[outputPos + 2]);
+            copy(&status[0], &status[2], &output[outputPos + 4]);
+
+            outputPos += 6;
+        }
     }
-    unsigned char * footer = coordinateHeader(0, 0, 0);
+    char * footer = coordinateHeader(0, 0, 0);
     output.resize(output.size() + 32);
-    copy(footer, footer + 32, &output[0] + outputPos);
-    return &output;
+    copy(&footer[0], &footer[32], &output[0] + outputPos);
+    delete[] footer;
+    return output;
 }
 
-unsigned char * colourHeader(u_int16_t totalColours, u_int16_t paletteNumber) {
-    unsigned char output[32];
-    unsigned char header[8] = {ILDAHEADER, 0x2};
-    unsigned char paletteName[8] = { 'P', 'L', 'T', '0', '0', '0', '0', '0' };
-    unsigned char companyName[8] = COMPANYNAME;
+char * colourHeader(u_int16_t totalColours, u_int16_t paletteNumber) {
+    char * output = new char[32];
+    char header[8] = {ILDAHEADER, 0x2};
+    char paletteName[8] = { 'P', 'L', 'T', '0', '0', '0', '0', '0' };
+    char companyName[8] = COMPANYNAME;
 
-    unsigned char totalColoursc[2] = reverse16(totalColours);
+    char totalColoursc[2] = reverse16(totalColours);
     string paletteNumbers = to_string(paletteNumber);
-    unsigned char paletteNumberc[2] = reverse16(paletteNumber);
+    char paletteNumberc[2] = reverse16(paletteNumber);
 
     copy(&paletteNumbers[0], &paletteNumbers[paletteNumbers.length()], &paletteName[3 + (5 - paletteNumbers.length())]);
     copy(header, &header[8], &output[0]);
@@ -92,28 +100,30 @@ unsigned char * colourHeader(u_int16_t totalColours, u_int16_t paletteNumber) {
     return output;
 }
 
-vector<unsigned char> * ILDASerializer::colourTable() {
-    vector<unsigned char> output;
-    uint outputPos = 0;
-    u_int16_t totalPalettes = 4;
+vector<char> ILDASerializer::colourTable() {
+    colour_data colourArr[6] = {colourData(0, 0, 0), colourData(255, 255, 255), colourData(255, 0, 0), colourData(0, 255, 0), colourData(0, 0, 255), colourData(255, 0, 255)};
+    vector<char> output;
+    unsigned int outputPos = 0;
+    u_int16_t totalPalettes = 1;
     for (int palette = 0; palette < totalPalettes; palette++) {
-        u_int16_t totalColours = 10;
-        unsigned char * header = colourHeader(totalColours, palette);
-        unsigned char colours[totalColours*3]= {};
+        u_int16_t totalColours = sizeof(colourArr)/sizeof(colour_data);
+        char * header = colourHeader(totalColours, palette);
+        char colours[totalColours*3]= {};
         for (int colour = 0; colour < totalColours; colour++) {
-            __uint8_t r = 'R';
-            __uint8_t g = 'G';
-            __uint8_t b = 'B';
+            __uint8_t * r = &colourArr[colour].r;
+            __uint8_t * g = &colourArr[colour].g;
+            __uint8_t * b = &colourArr[colour].b;
 
-            copy(&r, &r + 1, &colours[colour * 3]);
-            copy(&g, &g + 1, &colours[colour * 3 + 1]);
-            copy(&b, &b + 1, &colours[colour * 3 + 2]);
+            copy(r, r + 1, &colours[colour * 3]);
+            copy(g, g + 1, &colours[colour * 3 + 1]);
+            copy(b, b + 1, &colours[colour * 3 + 2]);
         }
         output.resize(output.size() + 32 + (totalColours * 3));
         copy(header, header + 32, &output[outputPos]);
+        delete[] header;
         outputPos += 32;
         copy(colours, colours + (totalColours * 3), &output[outputPos]);
         outputPos += totalColours * 3;
     }
-    return &output;
+    return output;
 }

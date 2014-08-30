@@ -1,5 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "laserfunctionsilda.h"
+#include "ildaserializer.h"
+#include <vector>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -55,4 +62,22 @@ void MainWindow::redraw() {
     scene->offsetX = 51;
     scene->offsetY = 244;
     LaserFunctions::spinCubeYZ(scene, rotate);
+}
+
+void MainWindow::on_action_Export_triggered()
+{
+    vector<vector<coordinate_data>> allData(256);
+    for (int i = 0; i < 255; i++) {
+        allData[i] = LaserFunctionsILDA::spinCubeYZ(i);
+    }
+    vector<char> chrsVec = ILDASerializer::coordinates(allData);
+    vector<char> colsVec = ILDASerializer::colourTable();
+    ofstream out("out.ild", std::ofstream::binary);
+    for (int i=0; i < colsVec.size(); i++) {
+        out.write((const char*)&colsVec.data()[i], 1);
+    }
+    for (int i=0; i < chrsVec.size(); i++) {
+        out.write((const char*)&chrsVec.data()[i], 1);
+    }
+    out.close();
 }

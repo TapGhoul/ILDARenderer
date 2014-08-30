@@ -42,6 +42,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionQuit"/>
+    <addaction name="action_Export"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -54,6 +55,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="action_Export">
+   <property name="text">
+    <string>&amp;Export</string>
    </property>
   </action>
  </widget>

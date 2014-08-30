@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     laserscene.cpp \
     laserfunctions.cpp \
-    ildaserializer.cpp
+    ildaserializer.cpp \
+    laserfunctionsilda.cpp
 
 HEADERS  += mainwindow.h \
     laserscene.h \
     laserfunctions.h \
-    ildaserializer.h
+    ildaserializer.h \
+    laserfunctionsilda.h
 
 FORMS    += mainwindow.ui
 
