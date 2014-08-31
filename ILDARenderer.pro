@@ -30,4 +30,5 @@ FORMS    += mainwindow.ui
 CONFIG   += C++11
 
 OTHER_FILES += \
-    README.md
+    README.md \
+    LICENSE
