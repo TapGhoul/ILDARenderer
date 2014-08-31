@@ -1,5 +1,5 @@
-README
-======
+ILDARenderer
+============
 
 This is to import .obj files, spin them and export them as .ild files for laser shows.
 
