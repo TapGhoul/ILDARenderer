@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "laserfunctionsilda.h"
 #include "ildaserializer.h"
+#include "modeldata.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -89,12 +90,8 @@ void MainWindow::ExportILDA() {
     //filename = filename.isNull() ? "Null!" : filename.endsWith(".ild", Qt::CaseInsensitive) ? filename : filename + ".ild";
     //QMessageBox::information(this, "Title", filename, QMessageBox::Ok | QMessageBox::Close);
     ofstream out("out.ild", std::ofstream::binary);
-    for (int i=0; i < colsVec.size(); i++) {
-        out.write((const char*)&colsVec.data()[i], 1);
-    }
-    for (int i=0; i < chrsVec.size(); i++) {
-        out.write((const char*)&chrsVec.data()[i], 1);
-    }
+    out.write((const char*)colsVec.data(), colsVec.size());
+    out.write((const char*)chrsVec.data(), chrsVec.size());
     out.close();
     QMessageBox::information(this, "Success", "Successfully exported ILDA file!", QMessageBox::Ok);
 }
