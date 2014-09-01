@@ -49,10 +49,10 @@ vector<char> ILDASerializer::coordinates(vector<vector<coordinate_data>> coords)
     unsigned int totalFrames = coords.size();
     for (int frame = 0; frame < totalFrames; frame++) {
         unsigned int totalPoints = coords[frame].size();
-
         char * header = coordinateHeader(totalPoints, totalFrames, frame);
-        output.resize(output.size() + 32 + (totalPoints * 6));
-        copy(&header[0], &header[32], &output[outputPos]);
+        //output.resize(output.size() + 32 + (totalPoints * 6));
+        output.insert(output.end(), header, header + 32);
+        //copy(&header[0], &header[32], &output[outputPos]);
         delete[] header;
         outputPos += 32;
         for (int pointIndex = 0; pointIndex < totalPoints; pointIndex++) {
@@ -62,16 +62,15 @@ vector<char> ILDASerializer::coordinates(vector<vector<coordinate_data>> coords)
             char pointY[2] = reverse16(point->y);
             char status[2] = { point->blanking << 6 | (pointIndex == totalPoints - 1) << 7, point->colour };
 
-            copy(&pointX[0], &pointX[2], &output[outputPos]);
-            copy(&pointY[0], &pointY[2], &output[outputPos + 2]);
-            copy(&status[0], &status[2], &output[outputPos + 4]);
+            output.insert(output.end(), pointX, pointX + 2);
+            output.insert(output.end(), pointY, pointY + 2);
+            output.insert(output.end(), status, status + 2);
 
             outputPos += 6;
         }
     }
     char * footer = coordinateHeader(0, 0, 0);
-    output.resize(output.size() + 32);
-    copy(&footer[0], &footer[32], &output[0] + outputPos);
+    output.insert(output.end(), footer, footer + 32);
     delete[] footer;
     return output;
 }
@@ -108,22 +107,15 @@ vector<char> ILDASerializer::colourTable() {
     for (int palette = 0; palette < totalPalettes; palette++) {
         u_int16_t totalColours = sizeof(colourArr)/sizeof(colour_data);
         char * header = colourHeader(totalColours, palette);
-        char colours[totalColours*3]= {};
-        for (int colour = 0; colour < totalColours; colour++) {
-            __uint8_t * r = &colourArr[colour].r;
-            __uint8_t * g = &colourArr[colour].g;
-            __uint8_t * b = &colourArr[colour].b;
-
-            copy(r, r + 1, &colours[colour * 3]);
-            copy(g, g + 1, &colours[colour * 3 + 1]);
-            copy(b, b + 1, &colours[colour * 3 + 2]);
-        }
-        output.resize(output.size() + 32 + (totalColours * 3));
-        copy(header, header + 32, &output[outputPos]);
+        output.insert(output.end(), header, header + 32);
         delete[] header;
         outputPos += 32;
-        copy(colours, colours + (totalColours * 3), &output[outputPos]);
-        outputPos += totalColours * 3;
+        for (int colour = 0; colour < totalColours; colour++) {
+            output.push_back(colourArr[colour].r);
+            output.push_back(colourArr[colour].g);
+            output.push_back(colourArr[colour].b);
+            outputPos += 3;
+        }
     }
     return output;
 }
