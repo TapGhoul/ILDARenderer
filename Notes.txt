@@ -1,0 +1,32 @@
+Vertices:
+    * X, Y, Z
+    * Index
+    * Linked Vertices (by index)
+
+Lines:
+    * Point 1, Point 2
+    * Index
+    * Linked Lines (by index)
+
+Faces:
+    * Line N
+    * Index
+    * Normal Direction (is visible?)
+    * Linked Faces (by index)
+    * Bounding Box:
+        - Min X, Y, Z
+        - Max X, Y, Z
+
+Calculate line-to-line angle for faces (to draw this line?)
+    * Compare with other parallel-ish lines for comparison
+
+Find line length + end angles
+    * Can we slide the point without breaking the model?
+    * Can we remove the point altogether?
+
+To draw as a single line:
+    * Use recursive backtracking-inspired algorithm for finding shortest path that hits all points
+    * Find a better, faster one later on
+
+Find nearby end points for lines when drawing
+    * Minimize blanked travel

@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     laserscene.cpp \
     laserfunctions.cpp \
     ildaserializer.cpp \
-    laserfunctionsilda.cpp
+    laserfunctionsilda.cpp \
+    ildalaserscene.cpp
 
 HEADERS  += mainwindow.h \
     laserscene.h \
     laserfunctions.h \
     ildaserializer.h \
-    laserfunctionsilda.h
+    laserfunctionsilda.h \
+    ildalaserscene.h
 
 FORMS    += mainwindow.ui
 
@@ -31,4 +33,5 @@ CONFIG   += C++11
 
 OTHER_FILES += \
     README.md \
-    LICENSE
+    LICENSE \
+    Notes.txt
