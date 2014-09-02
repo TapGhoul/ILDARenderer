@@ -1,7 +1,10 @@
 #ifndef MODELDATA_H
 #define MODELDATA_H
 
+#include <iostream>
+#include <fstream>
 #include <vector>
+#include <string>
 
 struct vector3d {
     double x;
@@ -15,6 +18,11 @@ struct vertex {
     std::vector<vertex *> linked;
 };
 
+struct vertex_normal {
+    unsigned int index;
+    vector3d dir; // Direction
+};
+
 struct line {
     unsigned int index;
     vertex * verta;
@@ -24,8 +32,9 @@ struct line {
 
 struct face {
     unsigned int index;
+    std::vector<vertex *> verts;
     std::vector<line *> edges;
-    vector3d normal;
+    vertex_normal * normal;
     struct bounds {
         vector3d min;
         vector3d max;
@@ -37,6 +46,13 @@ class ModelData
 {
 public:
     ModelData();
+    void processData(std::string filepath);
+
+private:
+    std::vector<vertex> vertices;
+    std::vector<vertex_normal> normals;
+    std::vector<line> lines;
+    std::vector<face> faces;
 };
 
 #endif // MODELDATA_H
