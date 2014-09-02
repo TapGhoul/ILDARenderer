@@ -47,12 +47,12 @@ class ModelData
 public:
     ModelData();
     void processData(std::string filepath);
-
-private:
     std::vector<vertex> vertices;
     std::vector<vertex_normal> normals;
     std::vector<line> lines;
     std::vector<face> faces;
+
+private:
 };
 
 #endif // MODELDATA_H

@@ -95,3 +95,12 @@ void MainWindow::ExportILDA() {
     out.close();
     QMessageBox::information(this, "Success", "Successfully exported ILDA file!", QMessageBox::Ok);
 }
+
+void MainWindow::on_action_Import_triggered()
+{
+    ModelData md;
+    md.processData("/home/silvea/Documents/Laser Shit/Objs/Cube.obj");
+    for (int i=0; i < md.vertices.size(); i++) {
+        cout << md.vertices[i].pos.x << "," << md.vertices[i].pos.y << "," << md.vertices[i].pos.z << endl;
+    }
+}

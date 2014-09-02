@@ -22,10 +22,9 @@ public:
 private slots:
     void on_actionQuit_triggered();
     void redraw();
-
     void on_action_Export_triggered();
-
     void on_pushButton_clicked();
+    void on_action_Import_triggered();
 
 private:
     Ui::MainWindow *ui;

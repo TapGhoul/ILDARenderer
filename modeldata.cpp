@@ -33,6 +33,7 @@ void ModelData::processData(std::string filepath)
                 f.verts.insert(f.verts.end(), &vertices[vertI - 1]);
                 f.normal = (vertex_normal*)&normals[normI - 1];
             }
+            faces.insert(faces.end(), f);
         }
     }
     in.close();
@@ -53,8 +54,8 @@ void ModelData::processData(std::string filepath)
         for (std::vector<vertex*>::iterator it1 = faceElem.verts.begin(); it1 != faceElem.verts.end(); it1++) {
             vertex * vert = *it1;
             int index1 = it1 - faceElem.verts.begin() + 1;
-            std::cout << "Vertex " << index1 << ": " << vert->pos.x << "," << vert->pos.y << "," << vert->pos.z << std::endl;
+            std::cout << "\tVertex " << index1 << ": " << vert->pos.x << "," << vert->pos.y << "," << vert->pos.z << std::endl;
         }
-        std::cout << "Normal: " << faceElem.normal->dir.x << "," << faceElem.normal->dir.y << "," << faceElem.normal->dir.z << std::endl;
+        std::cout << "\tNormal: " << faceElem.normal->dir.x << "," << faceElem.normal->dir.y << "," << faceElem.normal->dir.z << std::endl;
     }
 }
