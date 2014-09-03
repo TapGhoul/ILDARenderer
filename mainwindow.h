@@ -6,6 +6,7 @@
 #include <QTimer>
 #include "laserscene.h"
 #include "laserfunctions.h"
+#include "modeldata.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,8 @@ private:
     QTimer *redrawTimer;
     QTime *rotateTime;
     void ExportILDA();
+    ModelData md;
+    int rotAngle;
 
 };
 

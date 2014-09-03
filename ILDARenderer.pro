@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     ildaserializer.cpp \
     laserfunctionsilda.cpp \
     ildalaserscene.cpp \
-    modeldata.cpp
+    modeldata.cpp \
+    3d/quaternion.cpp
 
 HEADERS  += mainwindow.h \
     laserscene.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     ildaserializer.h \
     laserfunctionsilda.h \
     ildalaserscene.h \
-    modeldata.h
+    modeldata.h \
+    3d/quaternion.h
 
 FORMS    += mainwindow.ui
 

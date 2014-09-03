@@ -1,4 +1,5 @@
 #include "modeldata.h"
+#include <math.h>
 
 
 ModelData::ModelData()
@@ -41,7 +42,13 @@ void ModelData::processData(std::string filepath)
         vertex vert = *it;
         int index = it - vertices.begin() + 1;
         std::cout << "Vertex " << index << ": " << vert.pos.x << "," << vert.pos.y << "," << vert.pos.z << std::endl;
+        center.x += vert.pos.x;
+        center.y += vert.pos.y;
+        center.z += vert.pos.z;
     }
+    center.x /= vertices.size();
+    center.y /= vertices.size();
+    center.z /= vertices.size();
     for (std::vector<vertex_normal>::iterator it = normals.begin(); it != normals.end(); it++) {
         vertex_normal norm = *it;
         int index = it - normals.begin() + 1;

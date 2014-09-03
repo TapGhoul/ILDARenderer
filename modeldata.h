@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <3d/quaternion.h>
 
 struct vector3d {
     double x;
@@ -51,6 +52,9 @@ public:
     std::vector<vertex_normal> normals;
     std::vector<line> lines;
     std::vector<face> faces;
+    vector3d center;
+    Quaternion orientation;
+    void normalizeQuaternion();
 
 private:
 };
