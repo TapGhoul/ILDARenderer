@@ -122,15 +122,21 @@ void MainWindow::on_action_Import_triggered()
         for (int i=0; i < md.vertices.size(); i++) {
             cout << md.vertices[i].pos.x << "," << md.vertices[i].pos.y << "," << md.vertices[i].pos.z << endl;
         }
-        disconnect(redrawTimer, SIGNAL(timeout()));
+        disconnect(redrawTimer, SIGNAL(timeout()), this, SLOT(redraw()));
         connect(redrawTimer, SIGNAL(timeout()), this, SLOT(on_action_Import_triggered()));
     }
-    rotAngle += 1;
+
     scene->clearScene();
     scene->offsetX = 0;
     scene->offsetY = 0;
 
-    double rotDeg = rotAngle*M_1_PI/45;
+    if (rotateTime->elapsed()/10 > 511) {
+        rotateTime->restart();
+    }
+
+    double rotDeg = rotateTime->elapsed()*M_1_PI/256;
+
+    ui->statusBar->showMessage(QString("Time: %1").arg(rotateTime->elapsed()/10));
 
     scene->setColour(Qt::white);
     vector<vector<vector3d>> points;
