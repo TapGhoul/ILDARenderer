@@ -151,9 +151,26 @@ void MainWindow::on_action_Import_triggered()
             vNorm.x = v.pos.x - md.center.x;
             vNorm.y = v.pos.y - md.center.y;
             vNorm.z = v.pos.z - md.center.z;
-            vPoint.x = vNorm.x * sin(rotDeg) + vNorm.y * -cos(rotDeg);
-            vPoint.y = vNorm.y * sin(rotDeg) + vNorm.z * -cos(rotDeg);
-            vPoint.z = vNorm.z * sin(rotDeg) + vNorm.x * -cos(rotDeg);
+
+            //vPoint.x = vNorm.x * sin(rotDeg) + vNorm.y * -cos(rotDeg);
+            //vPoint.y = vNorm.y * sin(rotDeg) + vNorm.z * -cos(rotDeg);
+            //vPoint.z = vNorm.z * sin(rotDeg) + vNorm.x * -cos(rotDeg);
+
+
+            // Euler rotation, order XYZ
+            vPoint.x = vNorm.x;
+            vPoint.y = vNorm.y * cos(rotDeg) - vNorm.z * sin(rotDeg);
+            vPoint.z = vNorm.z * cos(rotDeg) + vNorm.y * sin(rotDeg);
+
+            vNorm = vPoint;
+
+            vPoint.x = vNorm.x * cos(rotDeg) + vNorm.z * sin(rotDeg);
+            vPoint.z = vNorm.z * cos(rotDeg) - vNorm.x * sin(rotDeg);
+
+            vNorm = vPoint;
+
+            vPoint.x = vNorm.x * cos(rotDeg) - vNorm.y * sin(rotDeg);
+            vPoint.y = vNorm.y * cos(rotDeg) + vNorm.x * sin(rotDeg);
 
             //if (!canDraw(vPoint, points))
                 //break;
@@ -168,19 +185,42 @@ void MainWindow::on_action_Import_triggered()
         if (pointVec.size() > 0)
             points.insert(points.end(), pointVec);
     }
+
+    vector3d vPoint, vNorm;
+    vNorm.x = 1;
+    vNorm.y = 1;
+    vNorm.z = 1;
+
+    // Euler rotation, order XYZ
+    vPoint.x = vNorm.x;
+    vPoint.y = vNorm.y * cos(rotDeg) - vNorm.z * sin(rotDeg);
+    vPoint.z = vNorm.z * cos(rotDeg) + vNorm.y * sin(rotDeg);
+
+    vNorm = vPoint;
+
+    vPoint.x = vNorm.x * cos(rotDeg) + vNorm.z * sin(rotDeg);
+    vPoint.z = vNorm.z * cos(rotDeg) - vNorm.x * sin(rotDeg);
+
+    vNorm = vPoint;
+
+    vPoint.x = vNorm.x * cos(rotDeg) - vNorm.y * sin(rotDeg);
+    vPoint.y = vNorm.y * cos(rotDeg) + vNorm.x * sin(rotDeg);
+
+
     scene->setBlanking(true);
     scene->setColour(Qt::red);
-    //scene->setPos(75, -cos(rotDeg)*75 + 75);
-    scene->setPos(sin(rotDeg)*100 + 100, 100);
+    //scene->setPos(sin(rotDeg)*100 + 100, 100);
+    scene->setPos(vPoint.y*100 + 100, vPoint.z*100 + 100);
     scene->setBlanking(false);
     scene->setPos(100, 100);
     scene->setColour(Qt::green);
-    //scene->setPos(-sin(rotDeg)*100 + 100, sin(rotDeg)*100 + 100);
-    scene->setPos(100, -cos(rotDeg)*100 + 100);
+    //scene->setPos(100, -cos(rotDeg)*100 + 100);
+    scene->setPos(vPoint.x*100 + 100, vPoint.z*100 + 100);
     scene->setBlanking(true);
     scene->setPos(100, 100);
     scene->setColour(Qt::blue);
     scene->setBlanking(false);
-    scene->setPos(cos(rotDeg)*100 + 100, -sin(rotDeg)*100 + 100);
+    //scene->setPos(cos(rotDeg)*100 + 100, -sin(rotDeg)*100 + 100);
+    scene->setPos(vPoint.x*100 + 100, vPoint.y*100 + 100);
     scene->setBlanking(true);
 }
