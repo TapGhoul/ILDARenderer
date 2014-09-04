@@ -118,7 +118,7 @@ bool canDraw(vector3d pos, vector<vector<vector3d>> points) {
 void MainWindow::on_action_Import_triggered()
 {
     if (md.vertices.size() == 0) {
-        md.processData("/home/silvea/Documents/Laser Shit/Objs/Monkey.obj");
+        md.processData("/home/silvea/Documents/Laser Shit/Objs/Cube.obj");
         for (int i=0; i < md.vertices.size(); i++) {
             cout << md.vertices[i].pos.x << "," << md.vertices[i].pos.y << "," << md.vertices[i].pos.z << endl;
         }
@@ -171,7 +171,7 @@ void MainWindow::on_action_Import_triggered()
     scene->setBlanking(true);
     scene->setColour(Qt::red);
     //scene->setPos(75, -cos(rotDeg)*75 + 75);
-    scene->setPos(sin(rotDeg)*100 + 100, -cos(rotDeg)*100 + 100);
+    scene->setPos(sin(rotDeg)*100 + 100, 100);
     scene->setBlanking(false);
     scene->setPos(100, 100);
     scene->setColour(Qt::green);
