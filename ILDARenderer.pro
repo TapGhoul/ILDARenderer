@@ -35,6 +35,8 @@ FORMS    += mainwindow.ui
 
 CONFIG   += C++11
 
+INCLUDEPATH += $$PWD/libs/eigen-eigen-1306d75b4a21
+
 OTHER_FILES += \
     README.md \
     LICENSE \

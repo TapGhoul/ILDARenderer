@@ -55,6 +55,7 @@ public:
     vector3d center;
     Quaternion orientation;
     void normalizeQuaternion();
+    void rotate(vector3d rot);
 
 private:
 };

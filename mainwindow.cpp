@@ -118,7 +118,7 @@ bool canDraw(vector3d pos, vector<vector<vector3d>> points) {
 void MainWindow::on_action_Import_triggered()
 {
     if (md.vertices.size() == 0) {
-        md.processData("/home/silvea/Documents/Laser Shit/Objs/Cube.obj");
+        md.processData("/home/silvea/Documents/Laser Shit/Objs/Monkey.obj");
         for (int i=0; i < md.vertices.size(); i++) {
             cout << md.vertices[i].pos.x << "," << md.vertices[i].pos.y << "," << md.vertices[i].pos.z << endl;
         }
@@ -140,6 +140,11 @@ void MainWindow::on_action_Import_triggered()
 
     scene->setColour(Qt::white);
     vector<vector<vector3d>> points;
+    vector3d rotAng;
+    rotAng.x = 0.05;
+    rotAng.y = 0.03;
+    rotAng.z = 0.02;
+    md.rotate(rotAng);
     for (int i=0; i < md.faces.size(); i++) {
         face f = md.faces[i];
         scene->setBlanking(true);
@@ -147,7 +152,9 @@ void MainWindow::on_action_Import_triggered()
         for (int j=0; j < f.verts.size(); j++) {
             vertex v = *f.verts[j];
             vector3d vNorm;
-            vector3d vPoint;
+            vector3d vPoint = v.pos;
+#if FALSE
+            >> YO COMPILER IS A DUM DUM <<
             vNorm.x = v.pos.x - md.center.x;
             vNorm.y = v.pos.y - md.center.y;
             vNorm.z = v.pos.z - md.center.z;
@@ -174,6 +181,9 @@ void MainWindow::on_action_Import_triggered()
 
             //if (!canDraw(vPoint, points))
                 //break;
+#endif
+            if (!canDraw(vPoint, points))
+                break;
 
             scene->setPos(vPoint.x * -100 + 100, vPoint.y * -100 + 100);
             if (j == 0) {

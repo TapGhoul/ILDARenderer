@@ -1,6 +1,8 @@
 #include "modeldata.h"
 #include <math.h>
+#include <Eigen/Geometry>
 
+//using namespace Eigen;
 
 ModelData::ModelData()
 {
@@ -65,4 +67,64 @@ void ModelData::processData(std::string filepath)
         }
         std::cout << "\tNormal: " << faceElem.normal->dir.x << "," << faceElem.normal->dir.y << "," << faceElem.normal->dir.z << std::endl;
     }
+}
+
+bool sortZ (face a, face b)
+{
+    double zIndA = 0;
+    double zIndB = 0;
+    for (int i=0; i < a.verts.size(); i++)
+    {
+        zIndA += a.verts[i]->pos.z;
+    }
+    for (int i=0; i < b.verts.size(); i++)
+    {
+        zIndB += b.verts[i]->pos.z;
+    }
+    zIndA /= a.verts.size();
+    zIndB /= b.verts.size();
+    return zIndA > zIndB;
+}
+
+
+// WARNING: This operation is DESTRUCTIVE!
+void ModelData::rotate(vector3d rot)
+{
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        vector3d norm;
+        vector3d pos = vertices[i].pos;
+
+        norm.x = pos.x - center.x;
+        norm.y = pos.y - center.y;
+        norm.z = pos.z - center.z;
+        //std::sort
+
+        //pos.x = norm.x * sin(rotDeg) + norm.y * -cos(rotDeg);
+        //pos.y = norm.y * sin(rotDeg) + norm.z * -cos(rotDeg);
+        //pos.z = norm.z * sin(rotDeg) + norm.x * -cos(rotDeg);
+
+
+        // Euler rotation, order XYZ
+        pos.x = norm.x;
+        pos.y = norm.y * cos(rot.x) - norm.z * sin(rot.x);
+        pos.z = norm.z * cos(rot.x) + norm.y * sin(rot.x);
+
+        norm = pos;
+
+        pos.x = norm.x * cos(rot.y) + norm.z * sin(rot.y);
+        pos.z = norm.z * cos(rot.y) - norm.x * sin(rot.y);
+
+        norm = pos;
+
+        pos.x = norm.x * cos(rot.z) - norm.y * sin(rot.z);
+        pos.y = norm.y * cos(rot.z) + norm.x * sin(rot.z);
+
+        pos.x += center.x;
+        pos.y += center.y;
+        pos.z += center.z;
+
+        vertices[i].pos = pos;
+    }
+    std::sort(faces.begin(), faces.end(), sortZ);
 }
