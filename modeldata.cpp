@@ -128,3 +128,57 @@ void ModelData::rotate(vector3d rot)
     }
     std::sort(faces.begin(), faces.end(), sortZ);
 }
+
+std::vector<face *> ModelData::filterVisible()
+{
+    std::vector<face *> visibleFaces;
+    for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
+    {
+        face * f = (face *) &*it;
+        bool canDraw = true;
+        for (std::vector<face *>::iterator it1 = visibleFaces.begin(); it1 != visibleFaces.end(); it1++)
+        {
+            face * f1 = (face *) *it1;
+            double boundsSizeX;
+            double boundsSizeY;
+            bool compared = false;
+            for (std::vector<vertex *>::iterator it2 = f->verts.begin(); it2 != f->verts.end(); it2++)
+            {
+                vertex * v = (vertex *) *it2;
+                if ((v->pos.x < f1->bounds.min.x) == (v->pos.x > f1->bounds.max.x) &&
+                    (v->pos.y < f1->bounds.min.y) == (v->pos.y > f1->bounds.max.y))
+                {
+                    if (!compared)
+                    {
+                        // Remove "- 0.01" leniency when starting to process with multiple layers for angled faces
+                        boundsSizeX = std::abs(f1->bounds.max.x - f1->bounds.min.x) - 0.01;
+                        boundsSizeY = std::abs(f1->bounds.max.y - f1->bounds.min.y) - 0.01;
+                        compared = true;
+                    }
+                    if (std::max(std::abs(v->pos.x - f1->bounds.min.x), std::abs(v->pos.x - f1->bounds.max.x)) < boundsSizeX &&
+                        std::max(std::abs(v->pos.y - f1->bounds.min.y), std::abs(v->pos.y - f1->bounds.max.y)) < boundsSizeY)
+                    {
+                    canDraw = false;
+                    break;
+                    }
+                }
+            }
+        }
+        if (canDraw)
+        {
+            f->bounds.min = f->bounds.max = f->verts[0]->pos;
+            for (std::vector<vertex *>::iterator it1 = f->verts.begin(); it1 != f->verts.end(); it1++)
+            {
+                vertex * v = (vertex *) *it1;
+                vector3d pos = v->pos;
+                f->bounds.min.x = std::min(pos.x, f->bounds.min.x);
+                f->bounds.min.y = std::min(pos.y, f->bounds.min.y);
+
+                f->bounds.max.x = std::max(pos.x, f->bounds.max.x);
+                f->bounds.max.y = std::max(pos.y, f->bounds.max.y);
+            }
+            visibleFaces.push_back(f);
+        }
+    }
+    return visibleFaces;
+}

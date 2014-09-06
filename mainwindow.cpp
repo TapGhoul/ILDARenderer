@@ -145,12 +145,13 @@ void MainWindow::on_action_Import_triggered()
     rotAng.y = 0.03;
     rotAng.z = 0.02;
     md.rotate(rotAng);
-    for (int i=0; i < md.faces.size(); i++) {
-        face f = md.faces[i];
+    vector<face *> facesToDraw = md.filterVisible();
+    for (int i=0; i < facesToDraw.size(); i++) {
+        face * f = facesToDraw[i];
         scene->setBlanking(true);
         vector<vector3d> pointVec;
-        for (int j=0; j < f.verts.size(); j++) {
-            vertex v = *f.verts[j];
+        for (int j=0; j < f->verts.size()+1; j++) {
+            vertex v = *f->verts[j != f->verts.size() ? j : 0];
             vector3d vNorm;
             vector3d vPoint = v.pos;
 #if FALSE
@@ -182,8 +183,8 @@ void MainWindow::on_action_Import_triggered()
             //if (!canDraw(vPoint, points))
                 //break;
 #endif
-            if (!canDraw(vPoint, points))
-                break;
+            //if (!canDraw(vPoint, points))
+                //break;
 
             scene->setPos(vPoint.x * -100 + 100, vPoint.y * -100 + 100);
             if (j == 0) {

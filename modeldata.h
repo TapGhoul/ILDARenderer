@@ -56,6 +56,7 @@ public:
     Quaternion orientation;
     void normalizeQuaternion();
     void rotate(vector3d rot);
+    std::vector<face *> filterVisible();
 
 private:
 };
