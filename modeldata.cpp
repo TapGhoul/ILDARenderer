@@ -135,36 +135,36 @@ std::vector<face *> ModelData::filterVisible()
     for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
     {
         face * f = (face *) &*it;
-        bool canDraw = true;
+        bool canDraw = true, forceDraw = false;
         for (std::vector<face *>::iterator it1 = visibleFaces.begin(); it1 != visibleFaces.end(); it1++)
         {
             face * f1 = (face *) *it1;
-            double boundsSizeX;
-            double boundsSizeY;
-            bool compared = false;
             for (std::vector<vertex *>::iterator it2 = f->verts.begin(); it2 != f->verts.end(); it2++)
             {
                 vertex * v = (vertex *) *it2;
-                if ((v->pos.x < f1->bounds.min.x) == (v->pos.x > f1->bounds.max.x) &&
-                    (v->pos.y < f1->bounds.min.y) == (v->pos.y > f1->bounds.max.y))
+                for (std::vector<vertex *>::iterator it3 = f1->verts.begin(); it3 != f1->verts.end(); it3++)
                 {
-                    if (!compared)
-                    {
-                        // Remove "- 0.01" leniency when starting to process with multiple layers for angled faces
-                        boundsSizeX = std::abs(f1->bounds.max.x - f1->bounds.min.x) - 0.01;
-                        boundsSizeY = std::abs(f1->bounds.max.y - f1->bounds.min.y) - 0.01;
-                        compared = true;
+                    vertex * v1 = (vertex *) *it3;
+                    vertex * v_n = (vertex *) *(it3+1 == f1->verts.end() ? f1->verts.begin() : it3+1);
+                    if (v == v1 || v == v_n) {
+                        forceDraw = true;
+                        break;
                     }
-                    if (std::max(std::abs(v->pos.x - f1->bounds.min.x), std::abs(v->pos.x - f1->bounds.max.x)) < boundsSizeX &&
-                        std::max(std::abs(v->pos.y - f1->bounds.min.y), std::abs(v->pos.y - f1->bounds.max.y)) < boundsSizeY)
-                    {
-                    canDraw = false;
-                    break;
+                    if ((v->pos.y >= v1->pos.y) == (v->pos.y < v_n->pos.y)) {
+                        double xStep = (v_n->pos.y - v1->pos.y)/(v_n->pos.x - v1->pos.x);
+                        if (v1->pos.y - (v1->pos.x * xStep) <= v->pos.y - (v->pos.x * xStep))
+                        {
+                            canDraw = !canDraw;
+                        }
                     }
                 }
+                if (!canDraw || forceDraw)
+                    break;
             }
+            if (!canDraw || forceDraw)
+                break;
         }
-        if (canDraw)
+        if (canDraw || forceDraw)
         {
             f->bounds.min = f->bounds.max = f->verts[0]->pos;
             for (std::vector<vertex *>::iterator it1 = f->verts.begin(); it1 != f->verts.end(); it1++)
