@@ -16,6 +16,34 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="spinObject">
+        <property name="text">
+         <string>S&amp;pin Object</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stepSpin">
+        <property name="text">
+         <string>&amp;Step</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="hiddenLineVisible">
+        <property name="text">
+         <string>Show Hidden &amp;Lines</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QGraphicsView" name="graphicsView">
       <property name="interactive">
        <bool>false</bool>
@@ -28,7 +56,7 @@
     <item>
      <widget class="QPushButton" name="pushButton">
       <property name="text">
-       <string>Export</string>
+       <string>&amp;Export</string>
       </property>
      </widget>
     </item>

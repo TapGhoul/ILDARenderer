@@ -40,6 +40,9 @@ struct face {
         vector3d min;
         vector3d max;
     } bounds;
+    vector3d center;
+    bool canDraw;
+    bool canDraw1;
     std::vector<face *> linked;
 };
 
@@ -57,6 +60,7 @@ public:
     void normalizeQuaternion();
     void rotate(vector3d rot);
     std::vector<face *> filterVisible();
+    void recalculateFaceBounds();
 
 private:
 };

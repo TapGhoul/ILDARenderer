@@ -1,8 +1,6 @@
 #include "modeldata.h"
 #include <math.h>
-#include <Eigen/Geometry>
-
-//using namespace Eigen;
+#include <algorithm>
 
 ModelData::ModelData()
 {
@@ -129,44 +127,107 @@ void ModelData::rotate(vector3d rot)
     std::sort(faces.begin(), faces.end(), sortZ);
 }
 
+void ModelData::recalculateFaceBounds()
+{
+    for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
+    {
+        face * f = (face *) &*it;
+        f->canDraw = true;
+        f->canDraw1 = true;
+        f->bounds.min = f->bounds.max = f->verts[0]->pos;
+        f->center.x = f->center.y = f->center.z = 0;
+        for (std::vector<vertex *>::iterator it1 = f->verts.begin(); it1 != f->verts.end(); it1++)
+        {
+            vertex * v = (vertex *) *it1;
+            vector3d pos = v->pos;
+            f->bounds.min.x = std::min(pos.x, f->bounds.min.x);
+            f->bounds.min.y = std::min(pos.y, f->bounds.min.y);
+            f->bounds.min.z = std::min(pos.z, f->bounds.min.z);
+
+            f->bounds.max.x = std::max(pos.x, f->bounds.max.x);
+            f->bounds.max.y = std::max(pos.y, f->bounds.max.y);
+            f->bounds.max.z = std::max(pos.z, f->bounds.max.z);
+            f->center.x += v->pos.x;
+            f->center.y += v->pos.y;
+            f->center.z += v->pos.z;
+        }
+        f->center.x /= f->verts.size();
+        f->center.y /= f->verts.size();
+        f->center.z /= f->verts.size();
+    }
+}
+
 std::vector<face *> ModelData::filterVisible()
 {
+    recalculateFaceBounds();
     std::vector<face *> visibleFaces;
     for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
     {
         face * f = (face *) &*it;
-        bool canDraw = true, forceDraw = false;
-        for (std::vector<face *>::iterator it1 = visibleFaces.begin(); it1 != visibleFaces.end(); it1++)
+        if (!f->canDraw)
+            continue;
+        //forceDraw = false;
+        int intFaces = 0;
+        for (std::vector<face>::iterator it1 = faces.begin(); it1 != faces.end(); it1++)
         {
-            face * f1 = (face *) *it1;
-            for (std::vector<vertex *>::iterator it2 = f->verts.begin(); it2 != f->verts.end(); it2++)
+            face * f1 = (face *) &*it1;
+            bool skipPair = false;
+            if ((f->bounds.min.x < f1->bounds.max.x) == (f->bounds.max.x >= f1->bounds.min.x) &&
+                    (f->bounds.min.y < f1->bounds.max.y) == (f->bounds.max.y >= f1->bounds.min.y))//f->center.z <= f1->center.z)
             {
-                vertex * v = (vertex *) *it2;
-                for (std::vector<vertex *>::iterator it3 = f1->verts.begin(); it3 != f1->verts.end(); it3++)
+                for (std::vector<vertex *>::iterator it2 = f->verts.begin(); it2 != f->verts.end(); it2++)
                 {
-                    vertex * v1 = (vertex *) *it3;
-                    vertex * v_n = (vertex *) *(it3+1 == f1->verts.end() ? f1->verts.begin() : it3+1);
-                    if (v == v1 || v == v_n) {
-                        forceDraw = true;
-                        break;
-                    }
-                    if ((v->pos.y >= v1->pos.y) == (v->pos.y < v_n->pos.y)) {
-                        double xStep = (v_n->pos.y - v1->pos.y)/(v_n->pos.x - v1->pos.x);
-                        if (v1->pos.y - (v1->pos.x * xStep) <= v->pos.y - (v->pos.x * xStep))
-                        {
-                            canDraw = !canDraw;
+                    vertex * v = (vertex *) *it2;
+                    for (std::vector<vertex *>::iterator it3 = f1->verts.begin(); it3 != f1->verts.end(); it3++)
+                    {
+                        vertex * v1 = (vertex *) *it3;
+                        vertex * v_n = (vertex *) *(it2+1 == f->verts.end() ? f->verts.begin() : it2+1);
+                        vertex * v1_n = (vertex *) *(it3+1 == f1->verts.end() ? f1->verts.begin() : it3+1);
+                        if (v == v1 || v == v1_n || v1 == v_n || v_n == v1_n) {
+                            //forceDraw = true;
+                            //break;
+                            //f->canDraw = true;
+                            //f1->canDraw = false;
+                            skipPair = true;
+                            f->canDraw = true;
+                            //canDraw = false;
+                            //intVerts++;
+                            //f->canDraw = !f->canDraw;
+                            continue;
+                        }
+                        bool checked = false;
+                        if ((v->pos.y >= v1->pos.y) == (v->pos.y < v1_n->pos.y)) {
+                            double xStep = (v->pos.y - v1->pos.y)/(v1_n->pos.y - v1->pos.y);
+                            if (v->pos.x < v1->pos.x + xStep * (v1_n->pos.x - v1->pos.x))
+                            {
+                                if (f->center.z <= f1->center.z)
+                                    f->canDraw = !f->canDraw;
+                                else
+                                    f1->canDraw = !f1->canDraw;
+                                checked = true;
+                            }
+                        }
+                        if (false && !checked && (v1->pos.y >= v->pos.y) == (v1->pos.y < v_n->pos.y)) {
+                            double xStep = (v1->pos.y - v->pos.y)/(v_n->pos.y - v->pos.y);
+                            if (v1->pos.x < v->pos.x + xStep * (v_n->pos.x - v->pos.x))
+                            {
+                                if (f->center.z <= f1->center.z)
+                                    f->canDraw = !f->canDraw;
+                                else
+                                    f1->canDraw = !f1->canDraw;
+                            }
                         }
                     }
+                    if (skipPair)//!f->canDraw || !f->canDraw1 || skipPair)
+                        break;
                 }
-                if (!canDraw || forceDraw)
-                    break;
             }
-            if (!canDraw || forceDraw)
+            if (!f->canDraw || !f->canDraw1 || skipPair)
                 break;
         }
-        if (canDraw || forceDraw)
+        if (f->canDraw && f->canDraw1)
         {
-            f->bounds.min = f->bounds.max = f->verts[0]->pos;
+            /*f->bounds.min = f->bounds.max = f->verts[0]->pos;
             for (std::vector<vertex *>::iterator it1 = f->verts.begin(); it1 != f->verts.end(); it1++)
             {
                 vertex * v = (vertex *) *it1;
@@ -176,9 +237,10 @@ std::vector<face *> ModelData::filterVisible()
 
                 f->bounds.max.x = std::max(pos.x, f->bounds.max.x);
                 f->bounds.max.y = std::max(pos.y, f->bounds.max.y);
-            }
-            visibleFaces.push_back(f);
+            }*/
+            //visibleFaces.push_back(f);
         }
+        visibleFaces.push_back(f);
     }
     return visibleFaces;
 }

@@ -123,9 +123,12 @@ void MainWindow::on_action_Import_triggered()
             cout << md.vertices[i].pos.x << "," << md.vertices[i].pos.y << "," << md.vertices[i].pos.z << endl;
         }
         disconnect(redrawTimer, SIGNAL(timeout()), this, SLOT(redraw()));
-        connect(redrawTimer, SIGNAL(timeout()), this, SLOT(on_action_Import_triggered()));
+        connect(redrawTimer, SIGNAL(timeout()), this, SLOT(spinImport()));
     }
+}
 
+void MainWindow::spinImport()
+{
     scene->clearScene();
     scene->offsetX = 0;
     scene->offsetY = 0;
@@ -140,13 +143,16 @@ void MainWindow::on_action_Import_triggered()
 
     scene->setColour(Qt::white);
     vector<vector<vector3d>> points;
-    vector3d rotAng;
-    rotAng.x = 0.05;
-    rotAng.y = 0.03;
-    rotAng.z = 0.02;
-    md.rotate(rotAng);
+    if (ui->spinObject->isChecked())
+    {
+        vector3d rotAng;
+        rotAng.x = 0.05;
+        rotAng.y = 0.03;
+        rotAng.z = 0.02;
+        md.rotate(rotAng);
+    }
     vector<face *> facesToDraw = md.filterVisible();
-    for (int i=0; i < facesToDraw.size(); i++) {
+    for (int i=facesToDraw.size()-1; i > -1; i--) {
         face * f = facesToDraw[i];
         scene->setBlanking(true);
         vector<vector3d> pointVec;
@@ -154,6 +160,13 @@ void MainWindow::on_action_Import_triggered()
             vertex v = *f->verts[j != f->verts.size() ? j : 0];
             vector3d vNorm;
             vector3d vPoint = v.pos;
+            if (f->canDraw && f->canDraw1)
+                scene->setColour(QColor(127, 255, 255, 255));
+            else
+                if (ui->hiddenLineVisible->isChecked())
+                    scene->setColour(QColor(255, 0, 255, (vPoint.z + 1) * 96));
+            else
+                    continue;
 #if FALSE
             >> YO COMPILER IS A DUM DUM <<
             vNorm.x = v.pos.x - md.center.x;
@@ -197,7 +210,7 @@ void MainWindow::on_action_Import_triggered()
             points.insert(points.end(), pointVec);
     }
 
-    vector3d vPoint, vNorm;
+    /*vector3d vPoint, vNorm;
     vNorm.x = 1;
     vNorm.y = 1;
     vNorm.z = 1;
@@ -232,6 +245,23 @@ void MainWindow::on_action_Import_triggered()
     scene->setColour(Qt::blue);
     scene->setBlanking(false);
     //scene->setPos(cos(rotDeg)*100 + 100, -sin(rotDeg)*100 + 100);
-    scene->setPos(vPoint.x*100 + 100, vPoint.y*100 + 100);
+    scene->setPos(vPoint.x*100 + 100, vPoint.y*100 + 100);*/
     scene->setBlanking(true);
+}
+
+void MainWindow::on_stepSpin_clicked()
+{
+    if (!ui->spinObject->isChecked())
+    {
+        vector3d rotAng;
+        rotAng.x = 0.05;
+        rotAng.y = 0.03;
+        rotAng.z = 0.02;
+        md.rotate(rotAng);
+    }
+}
+
+void MainWindow::on_spinObject_toggled(bool checked)
+{
+    ui->stepSpin->setEnabled(!checked);
 }

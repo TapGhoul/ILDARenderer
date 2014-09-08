@@ -26,6 +26,11 @@ private slots:
     void on_action_Export_triggered();
     void on_pushButton_clicked();
     void on_action_Import_triggered();
+    void spinImport();
+
+    void on_stepSpin_clicked();
+
+    void on_spinObject_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
