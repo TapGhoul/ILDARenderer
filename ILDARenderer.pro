@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     laserfunctionsilda.cpp \
     ildalaserscene.cpp \
     modeldata.cpp \
-    3d/quaternion.cpp
+    3d/quaternion.cpp \
+    satcollision.cpp
 
 HEADERS  += mainwindow.h \
     laserscene.h \
@@ -29,7 +30,9 @@ HEADERS  += mainwindow.h \
     laserfunctionsilda.h \
     ildalaserscene.h \
     modeldata.h \
-    3d/quaternion.h
+    3d/quaternion.h \
+    satcollision.h \
+    types.h
 
 FORMS    += mainwindow.ui
 

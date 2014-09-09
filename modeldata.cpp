@@ -1,6 +1,7 @@
 #include "modeldata.h"
 #include <math.h>
 #include <algorithm>
+#include "satcollision.h"
 
 ModelData::ModelData()
 {
@@ -164,6 +165,35 @@ std::vector<face *> ModelData::filterVisible()
     for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
     {
         face * f = (face *) &*it;
+        bool forceDraw = false;
+        int visibleVerts = f->verts.size();
+        SATCollision coll;
+        for (std::vector<face>::iterator it1 = faces.begin(); it1 != faces.end(); it1++)
+        {
+            face * fComp = (face *) &*it1;
+            if (f->center.z < fComp->center.z &&
+                    (f->bounds.min.x < fComp->bounds.max.x) == (f->bounds.max.x >= fComp->bounds.min.x) &&
+                    (f->bounds.min.y < fComp->bounds.max.y) == (f->bounds.max.y >= fComp->bounds.min.y))
+            {
+                if (std::find_first_of(f->verts.begin(), f->verts.end(),
+                                       fComp->verts.begin(), fComp->verts.end()) == f->verts.end())
+                    f->canDraw = coll.SATVerts(f->verts, fComp->verts);
+            }
+            if (!f->canDraw)
+                break;
+        }
+        visibleFaces.push_back(f);
+    }
+    return visibleFaces;
+}
+
+std::vector<face *> ModelData::filterVisibleOld()
+{
+    recalculateFaceBounds();
+    std::vector<face *> visibleFaces;
+    for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
+    {
+        face * f = (face *) &*it;
         if (!f->canDraw)
             continue;
         //forceDraw = false;
@@ -195,7 +225,7 @@ std::vector<face *> ModelData::filterVisible()
                             //f->canDraw = !f->canDraw;
                             continue;
                         }
-                        bool checked = false;
+                        //bool checked = false;
                         if ((v->pos.y >= v1->pos.y) == (v->pos.y < v1_n->pos.y)) {
                             double xStep = (v->pos.y - v1->pos.y)/(v1_n->pos.y - v1->pos.y);
                             if (v->pos.x < v1->pos.x + xStep * (v1_n->pos.x - v1->pos.x))
@@ -204,9 +234,10 @@ std::vector<face *> ModelData::filterVisible()
                                     f->canDraw = !f->canDraw;
                                 else
                                     f1->canDraw = !f1->canDraw;
-                                checked = true;
+                                //checked = true;
                             }
                         }
+#if FALSE
                         if (false && !checked && (v1->pos.y >= v->pos.y) == (v1->pos.y < v_n->pos.y)) {
                             double xStep = (v1->pos.y - v->pos.y)/(v_n->pos.y - v->pos.y);
                             if (v1->pos.x < v->pos.x + xStep * (v_n->pos.x - v->pos.x))
@@ -217,6 +248,7 @@ std::vector<face *> ModelData::filterVisible()
                                     f1->canDraw = !f1->canDraw;
                             }
                         }
+#endif
                     }
                     if (skipPair)//!f->canDraw || !f->canDraw1 || skipPair)
                         break;
