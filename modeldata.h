@@ -21,7 +21,7 @@ public:
     Quaternion orientation;
     void normalizeQuaternion();
     void rotate(vector3d rot);
-    std::vector<face *> filterVisible();
+    std::vector<face *> filterVisible(int allowedOverlaps);
     std::vector<face *> filterVisibleOld();
     void recalculateFaceBounds();
 

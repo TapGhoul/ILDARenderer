@@ -44,6 +44,35 @@
      </layout>
     </item>
     <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Allowed Overlaps</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="allowedOverlaps">
+      <property name="minimum">
+       <number>0</number>
+      </property>
+      <property name="maximum">
+       <number>25</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksBelow</enum>
+      </property>
+      <property name="tickInterval">
+       <number>1</number>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QGraphicsView" name="graphicsView">
       <property name="interactive">
        <bool>false</bool>

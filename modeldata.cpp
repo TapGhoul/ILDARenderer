@@ -158,7 +158,7 @@ void ModelData::recalculateFaceBounds()
     }
 }
 
-std::vector<face *> ModelData::filterVisible()
+std::vector<face *> ModelData::filterVisible(int allowedOverlaps)
 {
     recalculateFaceBounds();
     std::vector<face *> visibleFaces;
@@ -167,20 +167,26 @@ std::vector<face *> ModelData::filterVisible()
         face * f = (face *) &*it;
         bool forceDraw = false;
         int visibleVerts = f->verts.size();
+        int hiddenCount = 0;
         SATCollision coll;
         for (std::vector<face>::iterator it1 = faces.begin(); it1 != faces.end(); it1++)
         {
             face * fComp = (face *) &*it1;
-            if (f->center.z < fComp->center.z &&
+            if (f->center.z <= fComp->center.z &&
                     (f->bounds.min.x < fComp->bounds.max.x) == (f->bounds.max.x >= fComp->bounds.min.x) &&
                     (f->bounds.min.y < fComp->bounds.max.y) == (f->bounds.max.y >= fComp->bounds.min.y))
             {
-                if (std::find_first_of(f->verts.begin(), f->verts.end(),
-                                       fComp->verts.begin(), fComp->verts.end()) == f->verts.end())
+                //if (std::find_first_of(f->verts.begin(), f->verts.end(),
+                //                       fComp->verts.begin(), fComp->verts.end()) == f->verts.end())
                     f->canDraw = coll.SATVerts(f->verts, fComp->verts);
             }
             if (!f->canDraw)
-                break;
+                if (hiddenCount < allowedOverlaps)
+                {
+                    hiddenCount++;
+                    f->canDraw = true;
+                } else
+                    break;
         }
         visibleFaces.push_back(f);
     }

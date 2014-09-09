@@ -151,7 +151,7 @@ void MainWindow::spinImport()
         rotAng.z = 0.02;
         md.rotate(rotAng);
     }
-    vector<face *> facesToDraw = md.filterVisible();
+    vector<face *> facesToDraw = md.filterVisible(ui->allowedOverlaps->value());
     for (int i=facesToDraw.size()-1; i > -1; i--) {
         face * f = facesToDraw[i];
         scene->setBlanking(true);
