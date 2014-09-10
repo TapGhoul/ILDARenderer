@@ -67,7 +67,7 @@ vector<char> ILDASerializer::coordinates(vector<vector<coordinate_data>> coords)
         for (int pointIndex = 0; pointIndex < totalPoints; pointIndex++) {
             coordinate_data * point = &coords[frame][pointIndex];
 
-            char pointX[2] = reverse16(point->x);
+            char pointX[2] = reverse16(-point->x); // X axis is inverted for some reason
             char pointY[2] = reverse16(point->y);
             char status[2] = { point->blanking << 6 | (pointIndex == totalPoints - 1) << 7, point->colour };
 
