@@ -7,6 +7,7 @@
 #include <string>
 #include <3d/quaternion.h>
 #include "types.h"
+#include "ildaserializer.h"
 
 class ModelData
 {
@@ -24,6 +25,7 @@ public:
     std::vector<face *> filterVisible(int allowedOverlaps);
     std::vector<face *> filterVisibleOld();
     void recalculateFaceBounds();
+    std::vector<coordinate_data> exportILDA(bool showHidden = false);
 
 private:
 };

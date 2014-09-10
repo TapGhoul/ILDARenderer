@@ -1,9 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 #include <vector>
+#include <math.h>
 
 struct vector3d {
     double x, y, z;
+    vector3d& normalize() {double mag = sqrt(x * x + y * y + z * z); x /= mag; y /= mag; z /= mag; return *this;}
+    const vector3d& operator*= (double mult) {x *= mult; y *= mult; z *= mult; return *this;}
+    const vector3d& operator/= (double div) {x /= div; y /= div; z /= div; return *this;}
 };
 
 struct vector2d {
@@ -13,6 +17,7 @@ struct vector2d {
 struct vertex {
     unsigned int index;
     vector3d pos;
+    vector3d origPos;
     std::vector<vertex *> linked;
 };
 

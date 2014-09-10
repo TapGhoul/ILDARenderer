@@ -19,6 +19,7 @@ void ModelData::processData(std::string filepath)
         if (data == "v") {
             vertex vert;
             in >> vert.pos.x >> vert.pos.y >> vert.pos.z;
+            vert.origPos = vert.pos;
             vertices.insert(vertices.end(), vert);
         } else if (data == "vn") {
             vertex_normal norm;
@@ -85,14 +86,12 @@ bool sortZ (face a, face b)
     return zIndA > zIndB;
 }
 
-
-// WARNING: This operation is DESTRUCTIVE!
 void ModelData::rotate(vector3d rot)
 {
     for (int i = 0; i < vertices.size(); i++)
     {
         vector3d norm;
-        vector3d pos = vertices[i].pos;
+        vector3d pos = vertices[i].origPos;
 
         norm.x = pos.x - center.x;
         norm.y = pos.y - center.y;
@@ -281,4 +280,29 @@ std::vector<face *> ModelData::filterVisibleOld()
         visibleFaces.push_back(f);
     }
     return visibleFaces;
+}
+
+/*coordinate_data setPoint(__int16_t x, __int16_t y, __int8_t colour = 1, bool blanking = false) {
+    coordinate_data output;
+    output.x = x;
+    output.y = y;
+    output.colour = colour;
+    output.blanking = blanking;
+    return output;
+}*/
+
+std::vector<coordinate_data> ModelData::exportILDA(bool showHidden)
+{
+    std::vector<coordinate_data> coords;
+    for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
+    {
+        face f = (face) *it;
+        if (showHidden || (f.canDraw && f.canDraw1))
+            for (std::vector<vertex *>::iterator it1 = f.verts.begin(); it1 != f.verts.end(); it1++)
+            {
+                vertex * v = (vertex *) *it1;
+                coords.push_back(ILDASerializer::setPoint(v->pos.x*16000, v->pos.y*16000, f.canDraw && f.canDraw1 ? 1 : 2, it1 == f.verts.begin()));
+            }
+    }
+    return coords;
 }

@@ -78,9 +78,19 @@ void MainWindow::on_pushButton_clicked()
 }
 
 void MainWindow::ExportILDA() {
-    vector<vector<coordinate_data>> allData(256);
-    for (int i = 0; i < 255; i++) {
-        allData[i] = LaserFunctionsILDA::spinCubeYZ(i);
+    vector<vector<coordinate_data>> allData(md.vertices.size() == 0 ? 256 : 128);
+    for (int i = 0; i < allData.size() - 1; i++) {
+        if (md.vertices.size() == 0)
+            allData[i] = LaserFunctionsILDA::spinCubeYZ(i);
+        else {
+            double rotDeg = i*M_1_PI/6.4;
+            vector3d rotAng = {0.05, 0.03, 0.02};
+            rotAng.normalize();
+            rotAng.x *= rotDeg/(M_1_PI*2.5);
+            md.rotate(rotAng);
+            md.filterVisible(ui->allowedOverlaps->value());
+            allData[i] = md.exportILDA(ui->hiddenLineVisible->isChecked());
+        }
     }
     vector<char> chrsVec = ILDASerializer::coordinates(allData);
     vector<char> colsVec = ILDASerializer::colourTable();
@@ -145,17 +155,15 @@ void MainWindow::spinImport()
     vector<vector<vector3d>> points;
     if (ui->spinObject->isChecked())
     {
-        vector3d rotAng;
-        rotAng.x = 0.05;
-        rotAng.y = 0.03;
-        rotAng.z = 0.02;
+        vector3d rotAng = {0.05, 0.03, 0.02};
+        rotAng.normalize();
+        rotAng.x *= rotDeg/(M_1_PI*2.5);
         md.rotate(rotAng);
     }
     vector<face *> facesToDraw = md.filterVisible(ui->allowedOverlaps->value());
     for (int i=facesToDraw.size()-1; i > -1; i--) {
         face * f = facesToDraw[i];
         scene->setBlanking(true);
-        vector<vector3d> pointVec;
         for (int j=0; j < f->verts.size()+1; j++) {
             vertex v = *f->verts[j != f->verts.size() ? j : 0];
             vector3d vNorm;
@@ -202,12 +210,8 @@ void MainWindow::spinImport()
             scene->setPos(vPoint.x * -100 + 100, vPoint.y * -100 + 100);
             if (j == 0) {
                 scene->setBlanking(false);
-            } else {
-                pointVec.insert(pointVec.end(), vPoint);
             }
         }
-        if (pointVec.size() > 0)
-            points.insert(points.end(), pointVec);
     }
 
     /*vector3d vPoint, vNorm;

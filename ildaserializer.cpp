@@ -19,6 +19,15 @@ colour_data colourData(__uint8_t r, __uint8_t g, __uint8_t b)
     return output;
 }
 
+coordinate_data ILDASerializer::setPoint(__int16_t x, __int16_t y, __int8_t colour, bool blanking) {
+    coordinate_data output;
+    output.x = x;
+    output.y = y;
+    output.colour = colour;
+    output.blanking = blanking;
+    return output;
+}
+
 char * coordinateHeader(u_int16_t totalPoints, u_int16_t totalFrames, u_int16_t frameNo) {
     char * output = new char[32];
     char header[8] = {ILDAHEADER, 0x1};

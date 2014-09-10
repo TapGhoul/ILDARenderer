@@ -30,3 +30,7 @@ To draw as a single line:
 
 Find nearby end points for lines when drawing
     * Minimize blanked travel
+
+For doing edge detection:
+    * Detect if z index is lower than another connected face, and faces overlap
+    * Draw connected edge
