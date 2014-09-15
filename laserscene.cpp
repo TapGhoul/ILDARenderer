@@ -1,4 +1,4 @@
-#define VISIBLEBLANKING false
+#define VISIBLEBLANKING true
 #include "laserscene.h"
 
 LaserScene::LaserScene(QObject *parent) :

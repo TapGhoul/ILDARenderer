@@ -34,3 +34,10 @@ Find nearby end points for lines when drawing
 For doing edge detection:
     * Detect if z index is lower than another connected face, and faces overlap
     * Draw connected edge
+
+Another methd:
+    * Calculate vertex normal
+    * Calculate connected vertex normals
+    * If normals are different enough, mark vertex as edge anchor point
+    * If 2 connected vertices are marked as such, mark edge as drawable
+    * Draw edges
