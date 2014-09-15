@@ -26,6 +26,7 @@ public:
     std::vector<face *> filterVisibleOld();
     void recalculateFaceBounds();
     std::vector<coordinate_data> exportILDA(bool showHidden = false);
+    std::vector<segment3d> filterEdges();
 
 private:
 };

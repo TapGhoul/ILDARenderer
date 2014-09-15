@@ -160,20 +160,23 @@ void MainWindow::spinImport()
         rotAng.x *= rotDeg/(M_1_PI*2.5);
         md.rotate(rotAng);
     }
-    vector<face *> facesToDraw = md.filterVisible(ui->allowedOverlaps->value());
-    for (int i=facesToDraw.size()-1; i > -1; i--) {
-        face * f = facesToDraw[i];
+    //vector<face *> facesToDraw = md.filterVisible(ui->allowedOverlaps->value());
+    vector<segment3d> vecs = md.filterEdges();
+    for (int i=0; i < vecs.size(); i++) {
+    //for (int i=facesToDraw.size()-1; i > -1; i--) {
+        //face * f = facesToDraw[i];
         scene->setBlanking(true);
-        for (int j=0; j < f->verts.size()+1; j++) {
-            vertex v = *f->verts[j != f->verts.size() ? j : 0];
-            vector3d vNorm;
-            vector3d vPoint = v.pos;
-            if (f->canDraw && f->canDraw1)
+        //for (int j=0; j < f->verts.size()+1; j++) {
+            //vertex v = *f->verts[j != f->verts.size() ? j : 0];
+            //vector3d vNorm;
+            //vector3d vPoint = v.pos;
+            segment3d vPoint = vecs[i];
+            if (true)//f->canDraw && f->canDraw1)
                 scene->setColour(QColor(127, 255, 255, 255));
             else
-                if (ui->hiddenLineVisible->isChecked())
-                    scene->setColour(QColor(255, 0, 255, (vPoint.z + 1) * 96));
-            else
+                //if (ui->hiddenLineVisible->isChecked())
+                    //scene->setColour(QColor(255, 0, 255, (vPoint.z + 1) * 96));
+            //else
                     continue;
 #if FALSE
             >> YO COMPILER IS A DUM DUM <<
@@ -207,11 +210,15 @@ void MainWindow::spinImport()
             //if (!canDraw(vPoint, points))
                 //break;
 
-            scene->setPos(vPoint.x * -100 + 100, vPoint.y * -100 + 100);
-            if (j == 0) {
-                scene->setBlanking(false);
-            }
-        }
+            //scene->setPos(vPoint.x * -100 + 100, vPoint.y * -100 + 100);
+            scene->setPos(vPoint.start.x * -100 + 100, vPoint.start.y * -100 + 100);
+            scene->setBlanking(false);
+            scene->setPos(vPoint.end.x * -100 + 100, vPoint.end.y * -100 + 100);
+            scene->setBlanking(true);
+            //if (j == 0) {
+                //scene->setBlanking(false);
+            //}
+        //}
     }
 
     /*vector3d vPoint, vNorm;

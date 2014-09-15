@@ -86,6 +86,11 @@ bool sortZ (face a, face b)
     return zIndA > zIndB;
 }
 
+bool sortXYZ (vector3d a, vector3d b)
+{
+    return sqrt(a.x * a.x + a.y * a.y) > sqrt(b.x * b.x + b.y * b.y);
+}
+
 void ModelData::rotate(vector3d rot)
 {
     for (int i = 0; i < vertices.size(); i++)
@@ -290,6 +295,52 @@ std::vector<face *> ModelData::filterVisibleOld()
     output.blanking = blanking;
     return output;
 }*/
+
+bool sortSegs(segment3d a, segment3d b)
+{
+    vector3d aMid = a.getMidpoint().abs();
+    vector3d bMid = b.getMidpoint().abs();
+    if (aMid.x == bMid.x)
+        return aMid.y > bMid.y;
+    else
+        return aMid.x > bMid.x;
+}
+
+bool sortSegsNeg(segment3d a, segment3d b)
+{
+    vector3d aMid = a.getMidpoint().abs();
+    vector3d bMid = b.getMidpoint().abs();
+    if (aMid.x == bMid.x)
+        return aMid.y < bMid.y;
+    else
+        return aMid.x < bMid.x;
+}
+
+std::vector<segment3d> ModelData::filterEdges()
+{
+    recalculateFaceBounds();
+    std::vector<vector3d> outVerts;
+    std::vector<segment3d> lines;
+    std::vector<segment3d> linesOut(500);
+    for (std::vector<face>::iterator it = faces.begin(); it != faces.end(); it++)
+    {
+        face f = (face) *it;
+        for (std::vector<vertex *>::iterator it1 = f.verts.begin(); it1 != f.verts.end(); it1++)
+        {
+            vertex * v = (vertex *) *it1;
+            vertex * v_n = (vertex *) *(it1+1 == f.verts.end() ? f.verts.begin() : it1+1);
+            lines.push_back({v->pos - center, v_n->pos - center});
+        }
+        //outVerts.push_back({f.bounds.max.x, f.bounds.max.y, f.bounds.max.z});
+    }
+    //std::sort(outVerts.begin(), outVerts.end(), sortXYZ);
+    std::sort(lines.begin(), lines.end(), sortSegs);
+    std::unique(lines.begin(), lines.end());
+    std::copy_n(lines.begin(), 250, linesOut.begin());
+    std::sort(lines.begin(), lines.end(), sortSegsNeg);
+    std::copy_n(lines.begin(), 250, linesOut.begin()+250);
+    return linesOut;
+}
 
 std::vector<coordinate_data> ModelData::exportILDA(bool showHidden)
 {
